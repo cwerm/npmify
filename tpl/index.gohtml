@@ -3,13 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>NPMify</title>
+    <link rel="stylesheet" href="assets/npmify.css" />
 </head>
     <body>
-        <ul>
-            <li>
-                <p><strong>Name</strong>: {{ .Name }}</p>
-                <p><strong>Description</strong>: {{ .Description }}</p>
-            </li>
-        </ul>
+        <div class="header">
+            <marquee><h1>{{ .OutdatedCount }} outdated  dependencies.</h1></marquee>
+        </div>
+        <div class="container">
+            {{ range .Bower }}
+                {{ if .Outdated }}
+                <div class="grid-container outdated">
+                {{ else }}
+                <div class="grid-container">
+                {{ end }}
+                    <h2 class="title">{{ .Name }}</h2>
+                    <div class="grid">
+                        <strong>Bower Version:</strong> <span>{{ .Version }}</span>
+                        <strong>NPM Version:</strong> <span>{{ .NpmVersion }}</span>
+                        <strong>Bower Type:</strong> <span>{{ .Type }}</span>
+                        <a href="https://www.npmjs.com/package/{{ .Name }}" target="_blank">NPM Link</a>
+                    </div>
+                </div>
+            {{ end }}
+        </div>
     </body>
 </html>

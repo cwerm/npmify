@@ -1,0 +1,30 @@
+body {
+    font-family: ".SF NS Text", sans-serif;
+}
+.container {
+    list-style: none;
+    width: 33vw;
+    position: relative;
+    margin: 0 auto;
+}
+.grid-container {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+.grid {
+    display: grid;
+    grid-template-columns: 33% 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+}
+
+.grid-container .title {
+    grid-column: auto / span 2;
+}
+
+.outdated {
+    background-color: #db5147;
+    color: #fff;
+
+}

@@ -5,22 +5,26 @@ import (
 	"fmt"
 	"github.com/Jeffail/gabs/v2"
 	. "github.com/logrusorgru/aurora"
+	"github.com/mcuadros/go-version"
 	"io/ioutil"
 	"log"
 	"npmify/fetch"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
 type Dependencies struct {
-	Bower []Bower `json:"bower"`
+	Bower 			[]Bower `json:"bower"`
+	OutdatedCount	int		`json:"outdated_count"`
 }
 
 type Bower struct {
-	Name string `json:"name"`
-	Version string `json:"version"`
-	NpmVersion string `json:"npm_version"`
-	//AnalyzedDate string `json:"analyzed_date"`
-	Type string `json:"type"`
+	Name 		string `json:"name"`
+	Version 	string `json:"version"`
+	NpmVersion 	string `json:"npm_version"`
+	Type 		string `json:"type"`
+	Outdated   	bool   `json:"outdated"`
 }
 
 var deps []Bower
@@ -52,13 +56,18 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 		var b = Bower{}
 
 		pkg := fetch.Get(`https://registry.npmjs.org/-/package/` + strings.ToLower(key) + `/dist-tags`)
-
+		var re = regexp.MustCompile(`^(\~|\^)(.*)`)
 		pkgJson, _ := gabs.ParseJSON(pkg)
 
+		var bowerVersion = re.ReplaceAllString(child.Data().(string), "${2}")
+		var npmVersion = strings.Trim(pkgJson.S("latest").String(), "\"")
+		var outdated = version.Compare(bowerVersion, npmVersion, "<")
+
 		b.Name = key
-		b.Version = child.Data().(string)
-		b.NpmVersion = strings.Trim(pkgJson.S("latest").String(), "\"")
+		b.Version = bowerVersion
+		b.NpmVersion = npmVersion
 		b.Type = bowerKey
+		b.Outdated = outdated
 
 		deps = append(deps, b)
 	}
@@ -67,12 +76,22 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 
 func newDeps(d []Bower) *Dependencies {
 	return &Dependencies{
+		OutdatedCount: findOutdated(d),
 		Bower: d,
 	}
 }
 
-func getBowerData(filePath string) {
+func findOutdated(deps []Bower) int {
+	var isOutdated []bool
+	for _, dep := range deps {
+		if dep.Outdated {
+			isOutdated = append(isOutdated, dep.Outdated)
+		}
+	}
 
+	FancyPrint("OUTDATED DEPENDENCIES: %s\n", strconv.Itoa(len(isOutdated)))
+
+	return len(isOutdated)
 }
 
 func WriteFile(filePath string) {
@@ -84,6 +103,12 @@ func WriteFile(filePath string) {
 
 	err = ioutil.WriteFile(filePath, file, 0644)
 	CheckErr(err)
+}
+
+func FancyPrint(format string, str string) {
+	if str != "" {
+		fmt.Printf(Sprintf(Blue(format).Bold(), BrightWhite(str).Bold()))
+	}
 }
 
 

@@ -5,9 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	//"io/ioutil"
 	"npmify/fs"
-	"io/ioutil"
 	"npmify/util"
+	"npmify/web"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -26,10 +27,14 @@ func main() {
 
 	cfg := SetupConfig()
 
-	data, err := ioutil.ReadFile(cfg.BowerFilePath)
-	util.CheckErr(err)
+	//bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
+	//util.CheckErr(err)
 
-	util.BuildDeps(data, cfg.OutputDir + "/" + cfg.OutputFileName)
+	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
+
+	//util.BuildDeps(bowerFile, outfile)
+
+	web.Init(outfile)
 }
 
 func SetupConfig() Configuration {
