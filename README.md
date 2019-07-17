@@ -1,5 +1,10 @@
 # npmify
 
+## TODO
+- [ ] Better documentation
+- [ ] Remove bloat from binary (via `go build`)
+- [ ] Automatically update `package.json`
+
 ## Usage
 _More detailed instructions in the works..._
 
