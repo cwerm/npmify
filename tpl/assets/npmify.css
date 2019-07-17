@@ -1,13 +1,28 @@
+/*! minireset.css v0.0.5 | MIT License | github.com/jgthms/minireset.css */html,body,p,ol,ul,li,dl,dt,dd,blockquote,figure,fieldset,legend,textarea,pre,iframe,hr,h1,h2,h3,h4,h5,h6{margin:0;padding:0}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}ul{list-style:none}button,input,select,textarea{margin:0}html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}img,video{height:auto;max-width:100%}iframe{border:0}table{border-collapse:collapse;border-spacing:0}td,th{padding:0;text-align:left}
+
 body {
     font-family: ".SF NS Text", sans-serif;
 }
+
+h1, h2, h3 {
+    font-weight: 700;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
 .container {
     list-style: none;
     width: 33vw;
     position: relative;
     margin: 0 auto;
 }
-.grid-container {
+.dependency {
     padding: 1rem;
     border-bottom: 1px solid rgba(0,0,0,0.25);
 }
@@ -23,8 +38,68 @@ body {
     grid-column: auto / span 2;
 }
 
-.outdated {
-    background-color: #db5147;
-    color: #fff;
+.title {
+    margin-bottom: 1rem;
+}
 
+.outdated {
+    /*background-color: #db5147;*/
+    /*color: #fff;*/
+}
+
+.outdated .title {
+    background-image:
+            radial-gradient(#db5147 20%, transparent 0),
+            radial-gradient(#db5147 0%, transparent 0);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.35em 1.2em;
+    border: 0.1em solid #333;
+    margin: 0 0.3em 0.3em 0;
+    border-radius: 0.12em;
+    box-sizing:  border-box;
+    text-decoration: none;
+    font-weight: 300;
+    color: #333;
+    text-align: center;
+    transition: all 0.2s;
+}
+.btn:hover {
+    background-color: #333333;
+    color: #fff;
+}
+
+.makeFancy {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 1.25rem;
+    background-color: #ccc;
+    color: #333;
+}
+
+.makeFancy:hover {
+    background-color: #fff;
+    color: #333333;
+}
+
+.header {
+    min-height: 56px;
+    background-color: rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+}
+
+.header h1 {
+    padding: 2rem;
+}
+
+.hidden {
+    display: none;
 }

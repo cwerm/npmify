@@ -5,6 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/logrusorgru/aurora"
+	"io/ioutil"
+
 	//"io/ioutil"
 	"npmify/fs"
 	"npmify/util"
@@ -20,19 +22,20 @@ type Configuration struct {
 	BowerFilePath	string `json:"bower_file_path"`
 }
 
-var usr, _ = user.Current()
 const defaultConfigFile = "config.json"
+
+var usr, _ = user.Current()
 
 func main() {
 
 	cfg := SetupConfig()
 
-	//bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
-	//util.CheckErr(err)
+	bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
+	util.CheckErr(err)
 
 	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
 
-	//util.BuildDeps(bowerFile, outfile)
+	util.BuildDeps(bowerFile, outfile)
 
 	web.Init(outfile)
 }

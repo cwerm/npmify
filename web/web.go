@@ -11,6 +11,7 @@ import (
 
 type Dependencies struct {
 	OutdatedCount   int   `json:"outdated_count"`
+	TotalDependencies 	int 	`json:"total_dependencies"`
 	Bower []struct {
 		Name       string `json:"name"`
 		Version    string `json:"version"`

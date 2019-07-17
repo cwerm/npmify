@@ -9,25 +9,14 @@ import (
 	"io/ioutil"
 	"log"
 	"npmify/fetch"
+	"npmify/fs"
+	"npmify/state"
 	"regexp"
-	"strconv"
+	//"sort"
 	"strings"
 )
 
-type Dependencies struct {
-	Bower 			[]Bower `json:"bower"`
-	OutdatedCount	int		`json:"outdated_count"`
-}
-
-type Bower struct {
-	Name 		string `json:"name"`
-	Version 	string `json:"version"`
-	NpmVersion 	string `json:"npm_version"`
-	Type 		string `json:"type"`
-	Outdated   	bool   `json:"outdated"`
-}
-
-var deps []Bower
+var deps []state.Bower
 
 func BuildDeps(data []byte, outputPath string) {
 
@@ -53,7 +42,7 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 	fmt.Printf(Sprintf(Blue("Getting keys for %s\n").Bold(), BrightWhite(bowerKey).Bold()))
 
 	for key, child := range jsonData.S(bowerKey).ChildrenMap() {
-		var b = Bower{}
+		var b = state.Bower{}
 
 		pkg := fetch.Get(`https://registry.npmjs.org/-/package/` + strings.ToLower(key) + `/dist-tags`)
 		var re = regexp.MustCompile(`^(\~|\^)(.*)`)
@@ -71,33 +60,39 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 
 		deps = append(deps, b)
 	}
-
 }
 
-func newDeps(d []Bower) *Dependencies {
-	return &Dependencies{
+func newDeps(d []state.Bower) *state.Dependencies {
+	return &state.Dependencies{
 		OutdatedCount: findOutdated(d),
+		TotalDependencies: getTotalCount(d),
 		Bower: d,
 	}
 }
 
-func findOutdated(deps []Bower) int {
+func findOutdated(deps []state.Bower) int {
 	var isOutdated []bool
 	for _, dep := range deps {
 		if dep.Outdated {
 			isOutdated = append(isOutdated, dep.Outdated)
 		}
 	}
-
-	FancyPrint("OUTDATED DEPENDENCIES: %s\n", strconv.Itoa(len(isOutdated)))
-
 	return len(isOutdated)
+}
+
+func getTotalCount(deps []state.Bower) int {
+	return len(deps)
 }
 
 func WriteFile(filePath string) {
 	d := newDeps(deps)
 
-	fmt.Println(Sprintf(Blue("Writing data to %s\n"), BrightWhite(filePath).Bold()))
+	//sort.Slice(d.Bower, func(i, j int) bool {
+	//	return d.Name
+	//
+	//})
+	fs.DoExcel(*d)
+
 	file, err := json.MarshalIndent(&d, "", "  ")
 	CheckErr(err)
 
