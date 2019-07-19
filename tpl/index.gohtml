@@ -12,12 +12,17 @@
         <div class="header hidden">
             <px-marquee data-outdated="{{ .OutdatedCount }}" data-total="{{ .TotalDependencies }}"></px-marquee>
         </div>
+        <div class="filters">
+            <button data-filter="outdated" class="filter btn">Remove Outdated</button>
+            <button data-filter="current" class="filter btn">Remove Current</button>
+        </div>
+        <div id="app"></div>
         <div class="container">
             {{ range .Bower }}
                 {{ if .Outdated }}
-                    <div class="dependency outdated">
+                    <div class="dependency outdated" data-outdated="true">
                 {{ else }}
-                    <div class="dependency">
+                    <div class="dependency" data-outdated="false">
                 {{ end }}
                     <h2 class="title">{{ .Name }}</h2>
                     <div class="grid">
@@ -30,6 +35,32 @@
             {{ end }}
         </div>
         <button class="makeFancy btn">🎉</button>
+
+        {{/* Experimenting with adding a lightweight view lib (currently hyperapp) to help with list filtering */}}
+        <script type="module">
+            import { h, app } from "https://unpkg.com/hyperapp@beta";
+
+            app({
+                init: [
+                    {{ range .Bower }}
+                    {
+                        outdated: {{ .Outdated }},
+                        name: '{{ .Name }}',
+                        bowerVersion: '{{ .Version }}',
+                        npmVersion: '{{ .NpmVersion }}',
+                        bowerType: '{{ .Type }}'
+                    },
+                    {{ end }}
+                ],
+                view: state =>
+                    h("div", {}, [
+                        h("h1", {}, state),
+                        h("button", { onClick: state => state - 1 }, "-"),
+                        h("button", { onClick: state => state + 1 }, "+")
+                    ]),
+                node: document.getElementById("app")
+            })
+        </script>
         <script src="assets/npmify.js"></script>
     </body>
 </html>

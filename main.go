@@ -4,23 +4,18 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/logrusorgru/aurora"
 	"io/ioutil"
+	"npmify/msg"
+	"npmify/state"
+	"npmify/util"
 
 	//"io/ioutil"
 	"npmify/fs"
-	"npmify/util"
 	"npmify/web"
 	"os"
 	"os/user"
 	"path/filepath"
 )
-
-type Configuration struct {
-	OutputDir		string `json:"output_dir"`
-	OutputFileName 	string `json:"output_file_name"`
-	BowerFilePath	string `json:"bower_file_path"`
-}
 
 const defaultConfigFile = "config.json"
 
@@ -30,8 +25,10 @@ func main() {
 
 	cfg := SetupConfig()
 
+	msg.FancyPrint("/**************************************\n * NPMify v%s\n **************************************/\n", cfg.Version)
+
 	bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
-	util.CheckErr(err)
+	msg.CheckErr(err)
 
 	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
 
@@ -40,10 +37,8 @@ func main() {
 	web.Init(outfile)
 }
 
-func SetupConfig() Configuration {
-	fmt.Printf(aurora.Sprintf(aurora.BgBlue("  NPMify v0.0.1  %s").BrightWhite().Bold(), "\n"))
-
-	configuration := Configuration{}
+func SetupConfig() state.Configuration {
+	configuration := state.Configuration{}
 
 	cfgFile := flag.String("cfg", filepath.Join(usr.HomeDir, "npmify", defaultConfigFile), "Path to your config")
 	configuration = settings(*cfgFile)
@@ -52,46 +47,54 @@ func SetupConfig() Configuration {
 	return configuration
 }
 
-func settings(filename string) Configuration {
-	configuration := Configuration{}
+func settings(filename string) state.Configuration {
+	configuration := state.Configuration{}
 
-	file, err := os.Open(filename)
+	// Create the default directory if it doesn't exist.
+	defaultDir := filepath.Join(usr.HomeDir, "npmify")
+	fmt.Printf("%s exists? %t\n", defaultDir, fs.DirectoryExists(defaultDir))
 
+	fmt.Printf("%s exists? %t\n", filename, fs.FileExists(filename))
 	// If config file doesn't exist, create it.
-	if os.IsNotExist(err) {
+	if !fs.FileExists(filename) {
 		fmt.Println("Config file does not exist, generating default config.")
-		defaultDir := filepath.Join(usr.HomeDir, "npmify")
 
-		fs.CreateDirectory(defaultDir)
+		fs.CreateDirectoryIfNotExist(defaultDir)
 
-		file, err = os.Create(filename)
-		util.CheckErr(err)
+		file, err := os.Create(filename)
+		msg.CheckErr(err)
 
 		var b []byte
-		// Populate the configuration struct
-		configuration := Configuration{filepath.Join(usr.HomeDir, "npmify"), "npmified.json", "~/pax/paxserver/frontend/bower.json"}
+		// Populate the configuration struct with defaults
+		configuration.OutputDir = filepath.Join(usr.HomeDir, "npmify")
+		configuration.OutputFileName = "npmified.json"
+		configuration.BowerFilePath = "/path/to/bower.json"
+		configuration.PackageJsonPath = "/path/to/package.json"
+		configuration.Packages = []state.Package{}
+		configuration.Version = "0.0.1"
 
 		// struct --> json
 		b, err = json.MarshalIndent(configuration, "", "  ")
-		util.CheckErr(err)
+		msg.CheckErr(err)
 
 		// Write the new config file
 		_, err = file.Write(b)
-		util.CheckErr(err)
+		msg.CheckErr(err)
 
 		// Close the file after write to the fs
 		err = file.Close()
-		util.CheckErr(err)
+		msg.CheckErr(err)
 
 		fmt.Printf("Please edit the config file at %s and run the program again", filename)
 		os.Exit(0)
 	}
 
-	util.CheckErr(err)
+	file, err := os.Open(filename)
+	msg.CheckErr(err)
 
 	// Parse JSON config
 	err = json.NewDecoder(file).Decode(&configuration)
-	util.CheckErr(err)
+	msg.CheckErr(err)
 
 	return configuration
 }

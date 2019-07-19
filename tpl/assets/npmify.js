@@ -128,6 +128,7 @@ class PxMarquee extends HTMLElement {
     }
 }
 
+// Remember jQuery?!?!
 const $ = (selector) => {
     return document.querySelector(selector);
 };
@@ -139,6 +140,8 @@ const $$ = (selector) => {
 customElements.define('px-marquee', PxMarquee);
 
 const fancyBtn = $('.makeFancy');
+let listItems = Array.from($$('.dependency'));
+const filterBtns = $$('button[data-filter]');
 
 const toggleHeader = () => {
     const headerEls = $$('.header');
@@ -152,5 +155,19 @@ const toggleHeader = () => {
     })
 };
 
-fancyBtn.addEventListener('click', toggleHeader, null);
+const filterList = (cond) => {
+    console.log(cond);
+    listItems.forEach(li => {
+        if (cond === 'outdated' && li.dataset.outdated === 'true') {
+            li.classList.add('hidden');
+        } else
+        if (cond === 'current' && li.dataset.outdated === 'false') {
+            li.classList.add('hidden');
+        }
+    })
+};
 
+fancyBtn.addEventListener('click', toggleHeader, null);
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => { filterList(btn.dataset.filter) });
+});

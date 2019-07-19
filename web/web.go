@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"npmify/util"
+	"npmify/msg"
 	"os"
 )
 
@@ -32,17 +32,17 @@ func Init(dataFile string) {
 	}
 
 	layout, err := template.ParseFiles("tpl/index.gohtml")
-	util.CheckErr(err)
+	msg.CheckErr(err)
 
 	err = json.NewDecoder(df).Decode(&dependencies)
-	util.CheckErr(err)
+	msg.CheckErr(err)
 
 	fileServer := http.FileServer(http.Dir("tpl/assets/"))
 
 	mux.Handle("/assets/", http.StripPrefix("/assets/", fileServer))
 	mux.HandleFunc("/", home(layout, &dependencies))
 
-	util.FancyPrint("Serving content on %s\n", "http://localhost:" + server.Addr)
+	msg.FancyPrint("Serving content on %s\n", "http://localhost:" + server.Addr)
 
 	log.Fatal(server.ListenAndServe())
 }

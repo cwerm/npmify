@@ -1,18 +1,14 @@
 package util
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/Jeffail/gabs/v2"
-	. "github.com/logrusorgru/aurora"
 	"github.com/mcuadros/go-version"
-	"io/ioutil"
-	"log"
 	"npmify/fetch"
 	"npmify/fs"
+	"npmify/msg"
 	"npmify/state"
 	"regexp"
-	//"sort"
+	"strconv"
 	"strings"
 )
 
@@ -21,9 +17,7 @@ var deps []state.Bower
 func BuildDeps(data []byte, outputPath string) {
 
 	jsonParsed, err := gabs.ParseJSON(data)
-	if err != nil {
-		fmt.Print(err)
-	}
+	msg.CheckErr(err)
 
 	// Pull in all items under "dependencies"
 	getKeys(jsonParsed, "dependencies")
@@ -34,12 +28,18 @@ func BuildDeps(data []byte, outputPath string) {
 	// Pull in all items under "resolutions"
 	getKeys(jsonParsed, "resolutions")
 
-	WriteFile(outputPath)
+	d := &state.Dependencies{
+		OutdatedCount: findOutdated(deps),
+		TotalDependencies: getTotalCount(deps),
+		Bower: deps,
+	}
+
+	fs.WriteFile(outputPath, d)
 }
 
 func getKeys(jsonData *gabs.Container, bowerKey string) {
 
-	fmt.Printf(Sprintf(Blue("Getting keys for %s\n").Bold(), BrightWhite(bowerKey).Bold()))
+	msg.FancyPrint("Getting package names for bower %s\n", bowerKey)
 
 	for key, child := range jsonData.S(bowerKey).ChildrenMap() {
 		var b = state.Bower{}
@@ -58,16 +58,35 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 		b.Type = bowerKey
 		b.Outdated = outdated
 
+		if !IsVersionNumber(bowerVersion) {
+			b.Group = "noBowerVersion"
+		}
+		if !IsVersionNumber(npmVersion) {
+			b.Group = "noNpmVersion"
+		}
+
 		deps = append(deps, b)
 	}
 }
 
-func newDeps(d []state.Bower) *state.Dependencies {
-	return &state.Dependencies{
-		OutdatedCount: findOutdated(d),
-		TotalDependencies: getTotalCount(d),
-		Bower: d,
+// IsVersionNumber takes a string, and runs Atoi on the first character.
+// If the first character is a number (or if the version string is "*" or "latest",
+// we return true.
+func IsVersionNumber(version string) bool {
+	firstChar := version[:1]
+
+	if version == "*" || version == "latest" {
+		return true
 	}
+
+	// There's a more terse way to do this, I just don't have the mental capacity
+	// to figure it out right now.
+	if _, err := strconv.Atoi(firstChar); err == nil {
+		return true
+	} else {
+		return false
+	}
+
 }
 
 func findOutdated(deps []state.Bower) int {
@@ -82,33 +101,4 @@ func findOutdated(deps []state.Bower) int {
 
 func getTotalCount(deps []state.Bower) int {
 	return len(deps)
-}
-
-func WriteFile(filePath string) {
-	d := newDeps(deps)
-
-	//sort.Slice(d.Bower, func(i, j int) bool {
-	//	return d.Name
-	//
-	//})
-	fs.DoExcel(*d)
-
-	file, err := json.MarshalIndent(&d, "", "  ")
-	CheckErr(err)
-
-	err = ioutil.WriteFile(filePath, file, 0644)
-	CheckErr(err)
-}
-
-func FancyPrint(format string, str string) {
-	if str != "" {
-		fmt.Printf(Sprintf(Blue(format).Bold(), BrightWhite(str).Bold()))
-	}
-}
-
-
-func CheckErr(err error) {
-	if err != nil {
-		log.Panicf("ERROR: %s\n", Red(err))
-	}
 }
