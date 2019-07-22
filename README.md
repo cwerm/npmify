@@ -1,6 +1,6 @@
 # npmify
 
-Are you sick and tired of wrangling with an aging code base? Did you too once bask in the sun when Bower was one of the most popular package managers? Do you wish there was an easier way to crawl through your endless list of old dependencies to see if you can painlessly convert them over to your `package.json`? Well you're in for a treat.
+Are you sick and tired of wrangling with an aging code base? Did you too once bask in the sun when Bower was one of the most popular package managers but never quite moved on? Do you wish there was an easier way to crawl through your endless list of old dependencies to see if you can painlessly convert them over to your `package.json`? Well you're in for a treat.
 
 `npmify` is a command-line utility that takes your weathered `bower.json` file and checks each dependency against Npm's package registry to conveniently give you a list of all outdated and unsupported packages you'd like to convert over.
 
@@ -8,12 +8,10 @@ Listen, we've all been in your shoes before. Save yourself some time and automat
 
 ## It's probably best to know...
 
-This project is in it's infancy right now, so there's a fair share of dust and wonkiness at times. There are a lot of great plans for this project, so if it's not a great fit for your needs right now, please file an issue for anything you'd like to see and maybe stick around for the ride 😃
+This project is in it's infancy right now, so there's a fair share of dusts. There are a lot of plans for this project, so if it's not a great fit for your needs right now, please file an issue for anything you'd like to see and maybe stick around for the ride 😃
 
 ## TODO
 
-- [ ] Better documentation
-- [ ] Remove bloat from binary (via `go build`)
 - [ ] Automatically update `package.json`
 - [ ] Command line arguments
   - [ ] Independent webserver launch
@@ -28,8 +26,8 @@ If you're looking to get some quick results, here's what you can do!
 1. Clone the repo to your local machine
 1. From the project's directory, run `make clean-start`
 1. Open up `~/npmify/config.json` in your favorite text editor and fill out the following values:
-    1. `bower_file_path`
-    1. `package_json_path`
+    * `bower_file_path`
+    * `package_json_path`
 1. Save your config file and run `make run`
 1. If it finished successfully, open up <a href="localhost:1234">localhost:1234</a> to witness true disbelief
 
