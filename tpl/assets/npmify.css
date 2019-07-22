@@ -29,7 +29,7 @@ h2 {
 .grid {
     display: grid;
     grid-template-columns: 33% 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
     grid-column-gap: 10px;
     grid-row-gap: 10px;
 }
@@ -40,6 +40,9 @@ h2 {
 
 .title {
     margin-bottom: 1rem;
+}
+.title.done {
+    text-decoration: line-through;
 }
 
 .outdated {

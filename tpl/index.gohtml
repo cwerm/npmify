@@ -7,7 +7,7 @@
 </head>
     <body>
         <div class="header">
-            <h1>{{ .OutdatedCount }} out of {{ .TotalDependencies }} dependencies are outdated.</h1>
+            <h1><span class="outdatedCount">{{ .OutdatedCount }}</span> out of {{ .TotalDependencies }} dependencies are outdated.</h1>
         </div>
         <div class="header hidden">
             <px-marquee data-outdated="{{ .OutdatedCount }}" data-total="{{ .TotalDependencies }}"></px-marquee>
@@ -15,52 +15,15 @@
         <div class="filters">
             <button data-filter="outdated" class="filter btn">Remove Outdated</button>
             <button data-filter="current" class="filter btn">Remove Current</button>
+            <label for="searchFilter">Filter <input type="text" id="searchFilter" class="searchFilter" value="" placeholder="Package name" /></label>
+            <button data-filter="reset" class="filter btn">Reset</button>
         </div>
-        <div id="app"></div>
         <div class="container">
-            {{ range .Bower }}
-                {{ if .Outdated }}
-                    <div class="dependency outdated" data-outdated="true">
-                {{ else }}
-                    <div class="dependency" data-outdated="false">
-                {{ end }}
-                    <h2 class="title">{{ .Name }}</h2>
-                    <div class="grid">
-                        <strong>Bower Version:</strong> <span>{{ .Version }}</span>
-                        <strong>NPM Version:</strong> <span>{{ .NpmVersion }}</span>
-                        <strong>Bower Type:</strong> <span>{{ .Type }}</span>
-                        <a class="btn" href="https://www.npmjs.com/package/{{ .Name }}" target="_blank">NPM Link</a>
-                    </div>
-                </div>
-            {{ end }}
+            <div id="app"></div>
         </div>
+
         <button class="makeFancy btn">🎉</button>
 
-        {{/* Experimenting with adding a lightweight view lib (currently hyperapp) to help with list filtering */}}
-        <script type="module">
-            import { h, app } from "https://unpkg.com/hyperapp@beta";
-
-            app({
-                init: [
-                    {{ range .Bower }}
-                    {
-                        outdated: {{ .Outdated }},
-                        name: '{{ .Name }}',
-                        bowerVersion: '{{ .Version }}',
-                        npmVersion: '{{ .NpmVersion }}',
-                        bowerType: '{{ .Type }}'
-                    },
-                    {{ end }}
-                ],
-                view: state =>
-                    h("div", {}, [
-                        h("h1", {}, state),
-                        h("button", { onClick: state => state - 1 }, "-"),
-                        h("button", { onClick: state => state + 1 }, "+")
-                    ]),
-                node: document.getElementById("app")
-            })
-        </script>
         <script src="assets/npmify.js"></script>
     </body>
 </html>

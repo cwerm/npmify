@@ -137,11 +137,49 @@ const $$ = (selector) => {
     return document.querySelectorAll(selector);
 };
 
+// Go template to compile the dependencies to js.
+let deps = [
+    {{ range .Bower }}
+    {
+        name: "{{ .Name }}",
+        version: "{{ .Version }}",
+        npmVersion: "{{ .NpmVersion }}",
+        outdated: {{ .Outdated }},
+        bowerType: "{{ .Type }}",
+    },
+{{ end }}
+];
+
+// Append the list of dependencies to the #app div.
+const buildList = (dependencies) => {
+    return $('#app').innerHTML = `
+    ${dependencies.map(dep => {
+        let isChecked = localStorage.getItem(dep.name) === 'true';
+        // console.log(dep.name, isChecked)
+        return `${dep.outdated ? `<div class="dependency outdated">` : `<div class="dependency">`}
+            ${isChecked ? `<h2 class="title done">${dep.name}</h2>` : `<h2 class="title">${dep.name}</h2>`} 
+            <div class="grid">
+                <strong>Bower Version:</strong> <span>${dep.version}</span>
+                <strong>NPM Version:</strong> <span>${dep.npmVersion}</span>
+                <strong>Bower Type:</strong> <span>${dep.bowerType}</span>
+                <a class="btn" href="https://www.npmjs.com/package/${dep.name}" target="_blank">NPM Link</a>
+                <span class="grid-spacer"></span>
+                <label for="${dep.name}-done">Done?</label>
+                ${isChecked ? `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" checked />` :
+            `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" />`
+            }
+                 
+            </div>
+        </div>`
+    }).join('')}
+`
+}
+
 customElements.define('px-marquee', PxMarquee);
 
 const fancyBtn = $('.makeFancy');
-let listItems = Array.from($$('.dependency'));
 const filterBtns = $$('button[data-filter]');
+const searchFilter = $('#searchFilter');
 
 const toggleHeader = () => {
     const headerEls = $$('.header');
@@ -155,19 +193,69 @@ const toggleHeader = () => {
     })
 };
 
-const filterList = (cond) => {
-    console.log(cond);
-    listItems.forEach(li => {
-        if (cond === 'outdated' && li.dataset.outdated === 'true') {
-            li.classList.add('hidden');
-        } else
-        if (cond === 'current' && li.dataset.outdated === 'false') {
-            li.classList.add('hidden');
+const filterOutdated = (prop) => {
+    if (prop === "reset") {
+        return buildList(deps);
+    }
+    let filtered = deps.filter(dep => {
+        if (prop === "outdated") {
+            return !dep.outdated;
+        } else {
+            return dep.outdated;
         }
-    })
+    });
+
+    return buildList(filtered);
+};
+
+const filterByName = (name) => {
+    let filtered = deps.filter(dep => {
+        return dep.name.indexOf(name) > -1;
+    });
+
+    return buildList(filtered);
+}
+
+const store = {
+    set: (key, val) => {
+        return new Promise(resolve => resolve(localStorage.setItem(key, val)))
+    },
+    get: (key) => {
+        return new Promise((resolve, reject) => {
+            if (localStorage.getItem(key)) {
+                resolve(localStorage.getItem(key));
+            }
+            reject('No key/val pair found.')
+        })
+    }
+};
+
+const markDone = (dep, done) => {
+    store.set(dep, done)
+        .then(() => {
+            buildList(deps)
+        })
 };
 
 fancyBtn.addEventListener('click', toggleHeader, null);
+
 filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => { filterList(btn.dataset.filter) });
+    btn.addEventListener('click', () => { filterOutdated(btn.dataset.filter); });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    buildList(deps);
+
+    const isDoneCheckboxes = $$('.isDone');
+
+    isDoneCheckboxes.forEach(check => {
+        check.addEventListener('change', (e) => {
+            markDone(e.target.value, e.target.checked);
+        });
+    });
+
+    searchFilter.addEventListener('keyup', e => {
+        filterByName(e.target.value);
+    })
+
 });
