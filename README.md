@@ -90,7 +90,7 @@ Want to manually download the go dependencies? Feel free to use this!
 
 ### Viewing the results
 
-At the end of a successful run, `npmify` will start up a webserver at port 1234 (for your convenience: <a href="localhost:1234">localhost:1234</a>) for you to view the results. Alternatively, an excel file detailing the carnage will be produced in the project's directory, or if you really like reading json files, you can also hop over to the output file as configured by your settings (`~/npmify/npmified.json` by default)
+At the end of a successful run, `npmify` will start up a webserver at  <a href="localhost:1234">localhost:1234</a> for you to view the results. Alternatively, an excel file detailing the carnage will be produced in the project's directory, or if you really like reading json files, you can also hop over to the output file as configured by your settings (`~/npmify/npmified.json` by default)
 
 ## Contributing
 
