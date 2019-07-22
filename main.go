@@ -18,7 +18,7 @@ import (
 )
 
 const defaultConfigFile = "config.json"
-
+var webOnly *bool
 var usr, _ = user.Current()
 
 func main() {
@@ -27,19 +27,21 @@ func main() {
 
 	msg.FancyPrint("/**************************************\n * NPMify v%s\n **************************************/\n", cfg.Version)
 
-	bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
-	msg.CheckErr(err)
-
 	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
 
-	util.BuildDeps(bowerFile, outfile)
+	if !*webOnly {
+		bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
+		msg.CheckErr(err)
+
+		util.BuildDeps(bowerFile, outfile)
+	}
 
 	web.Init(outfile)
 }
 
 func SetupConfig() state.Configuration {
 	configuration := state.Configuration{}
-
+	webOnly = flag.Bool("webOnly", false, "Just run the web server")
 	cfgFile := flag.String("cfg", filepath.Join(usr.HomeDir, "npmify", defaultConfigFile), "Path to your config")
 	configuration = settings(*cfgFile)
 	flag.Parse()

@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>NPMify</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/npmify.css" />
 </head>
     <body>
-        <div class="header">
-            <h1><span class="outdatedCount">{{ .OutdatedCount }}</span> out of {{ .TotalDependencies }} dependencies are outdated.</h1>
-        </div>
+        <header class="header lg:px-16 px-6 bg-white flex flex-wrap items-center lg:py-0 py-2">
+            <div class="flex-1 flex justify-between items-center">
+                <h3><span class="outdatedCount">{{ .OutdatedCount }}</span> out of {{ .TotalDependencies }} dependencies are outdated.</h3>
+            </div>
+        </header>
         <div class="header hidden">
             <px-marquee data-outdated="{{ .OutdatedCount }}" data-total="{{ .TotalDependencies }}"></px-marquee>
         </div>
+
         <div class="filters">
-            <button data-filter="outdated" class="filter btn">Remove Outdated</button>
-            <button data-filter="current" class="filter btn">Remove Current</button>
+            <ul class="list-reset flex lg:px-16 px-6 py-4">
+                <li class="mr-3">
+                    <button data-filter="outdated" class="filter inline-block border border-blue rounded py-1 px-3 bg-blue-500 text-white">Remove Outdated</button>
+                </li>
+                <li class="mr-3">
+                    <button data-filter="current" class="filter inline-block border border-white rounded hover:border-gray-lighter text-blue hover:bg-gray-300 py-1 px-3">Remove Current</button>
+                </li>
+                <li class="mr-3">
+                    <button data-filter="reset" class="filter inline-block border border-white rounded hover:border-red-700 hover:bg-red-500 hover:text-white py-1 px-3">Reset</button>
+                </li>
+            </ul>
+
             <label for="searchFilter">Filter <input type="text" id="searchFilter" class="searchFilter" value="" placeholder="Package name" /></label>
-            <button data-filter="reset" class="filter btn">Reset</button>
+
         </div>
         <div class="container">
             <div id="app"></div>
