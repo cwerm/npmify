@@ -2,8 +2,8 @@
 
 ## TODO
 - [ ] Better documentation
-- [ ] Remove bloat from binary (via `go build`)
-- [ ] Automatically update `package.json`
+- [ ] Remove bloat from binary (via `go build`) - [Issue](https://github.com/cwerm/npmify/issues/3)
+- [ ] Automatically update `package.json` - [Issue](https://github.com/cwerm/npmify/issues/4)
 
 ## Usage
 _More detailed instructions in the works..._
