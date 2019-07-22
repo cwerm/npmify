@@ -79,12 +79,12 @@ Want to manually download the go dependencies? Feel free to use this!
 
 ```json
 {
-  "output_dir": Output directory for the results,
-  "output_file_name": Output filename,
-  "bower_file_path": Absolute filepath to your bower file,
-  "package_json_path": Absolute filepath to your package.json (npm or yarn supported),
-  "packages": Best not to touch this one for now,
-  "version": Version that generated this file so we can help you upgrade down the road
+  "output_dir": "Output directory for the results",
+  "output_file_name": "Output filename",
+  "bower_file_path": "Absolute filepath to your bower file",
+  "package_json_path": "Absolute filepath to your package.json (npm or yarn supported)",
+  "packages": ["Best not to touch this one for now"],
+  "version": "Version that generated this file so we can help you upgrade down the road"
 }
 ```
 
