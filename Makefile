@@ -7,7 +7,10 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_NAME=npmify
 
-all:
+all: test build run
+
+clean-start: clean all
+
 build:
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
@@ -19,10 +22,8 @@ clean:
 	rm -f $(BINARY_NAME)
 
 run:
-	make clean
-	make build
 	./$(BINARY_NAME)
 
-get:
+deps:
 	$(GOGET)
 
