@@ -71,6 +71,11 @@ Runs the existing executable based on the settings in your current config file.
 Want to manually download the go dependencies? Feel free to use this!
 ***
 
+#### `make docs`
+
+For all of you book worms, run this to launch our godocs at <a href="localhost:6060/pkg/github.com//npmify">localhost:6060/pkg/github.com//npmify</a>
+***
+
 ### Configuration
 
 `npmify` is currently only configured by a json file located at `~/npmify/config.json`. If you're starting from scratch, you can run `npmify` and it will generate this file for you with a handful of defaults.

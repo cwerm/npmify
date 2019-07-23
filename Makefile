@@ -5,6 +5,8 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
+SCRIPTS=scripts
+GODOC=./$(SCRIPTS)/_godoc.sh
 BINARY_NAME=npmify
 
 all: test build run
@@ -26,4 +28,7 @@ run:
 
 deps:
 	$(GOGET)
+
+docs:
+	$(GODOC)
 
