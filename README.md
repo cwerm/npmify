@@ -29,7 +29,7 @@ If you're looking to get some quick results, here's what you can do!
     * `bower_file_path`
     * `package_json_path`
 1. Save your config file and run `make run`
-1. If it finished successfully, open up <a href="localhost:1234">localhost:1234</a> to witness true disbelief
+1. If it finished successfully, open up [localhost:1234](localhost:1234) to witness true disbelief
 
 ### Makefile
 
@@ -73,7 +73,7 @@ Want to manually download the go dependencies? Feel free to use this!
 
 #### `make docs`
 
-For all of you book worms, run this to launch our godocs at <a href="localhost:6060/pkg/github.com//npmify">localhost:6060/pkg/github.com//npmify</a>
+For all of you book worms, run this to launch our godocs at [localhost:6060/pkg/github.com//npmify"](localhost:6060/pkg/github.com//npmify)
 ***
 
 ### Configuration
@@ -95,7 +95,7 @@ For all of you book worms, run this to launch our godocs at <a href="localhost:6
 
 ### Viewing the results
 
-At the end of a successful run, `npmify` will start up a webserver at  <a href="localhost:1234">localhost:1234</a> for you to view the results. Alternatively, an excel file detailing the carnage will be produced in the project's directory, or if you really like reading json files, you can also hop over to the output file as configured by your settings (`~/npmify/npmified.json` by default)
+At the end of a successful run, `npmify` will start up a webserver at  [localhost:1234](localhost:1234) for you to view the results. Alternatively, an excel file detailing the carnage will be produced in the project's directory, or if you really like reading json files, you can also hop over to the output file as configured by your settings (`~/npmify/npmified.json` by default)
 
 ## Contributing
 
