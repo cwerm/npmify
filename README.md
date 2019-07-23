@@ -12,10 +12,9 @@ This project is in it's infancy right now, so there's a fair share of dusts. The
 
 ## TODO
 
-- [ ] Automatically update `package.json`
-- [ ] Command line arguments
-  - [ ] Independent webserver launch
-  - [ ] Config file overrides
+- [ ] Remove bloat from binary (via `go build`) - [Issue](https://github.com/cwerm/npmify/issues/3)
+- [ ] Automatically update `package.json` - [Issue](https://github.com/cwerm/npmify/issues/4)
+- [ ] Command line arguments - [Issue](https://github.com/cwerm/npmify/issues/6)
 
 ## Usage
 
