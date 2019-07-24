@@ -7,6 +7,7 @@ require (
 	github.com/Jeffail/gabs/v2 v2.0.0
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
 	github.com/fatih/structs v1.1.0
+	github.com/imdario/mergo v0.3.7
 	github.com/ivahaev/go-xlsx-templater v0.0.0-20190320090218-2e8cfa165ade
 	github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946
 	github.com/mcuadros/go-version v0.0.0-20190308113854-92cdf37c5b75

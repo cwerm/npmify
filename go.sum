@@ -8,6 +8,8 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fatih/structs v1.1.0 h1:Q7juDM0QtcnhCpeyLGQKyg4TOIghuNXrkL32pHAUMxo=
 github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
+github.com/imdario/mergo v0.3.7 h1:Y+UAYTZ7gDEuOfhxKWy+dvb5dRQ6rJjFSdX2HZY1/gI=
+github.com/imdario/mergo v0.3.7/go.mod h1:2EnlNZ0deacrJVfApfmtdGgDfMuh/nq6Ok1EcJh5FfA=
 github.com/ivahaev/go-xlsx-templater v0.0.0-20190320090218-2e8cfa165ade h1:ZCG9A7MBo270Ms+Y5tzCPYjbhtHdEf7ps+4MjS2lexU=
 github.com/ivahaev/go-xlsx-templater v0.0.0-20190320090218-2e8cfa165ade/go.mod h1:NbsCYbUXAmAgIpspE0wR1ZcfksHqZH4lEw86ST6986c=
 github.com/logrusorgru/aurora v0.0.0-20190428105938-cea283e61946 h1:z+WaKrgu3kCpcdnbK9YG+JThpOCd1nU5jO5ToVmSlR4=

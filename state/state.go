@@ -29,3 +29,17 @@ type Bower struct {
 	Outdated   	bool   `json:"outdated"`
 	Group		string	`json:"group"`
 }
+
+type PackageJson struct {
+	Name         string `json:"name"`
+	Version      string `json:"version"`
+	Dependencies map[string]interface{} `json:"dependencies"`
+	DevDependencies map[string]interface{} `json:"devDependencies"`
+	Engines map[string]interface{} `json:"engines"`
+	Scripts map[string]interface{} `json:"scripts"`
+}
+
+type NpmDependency struct {
+	PackageName 	string `json:"package_name"`
+	PackageVersion  string `json:"package_version"`
+}

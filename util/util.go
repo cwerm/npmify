@@ -1,18 +1,25 @@
 package util
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/Jeffail/gabs/v2"
+	"github.com/imdario/mergo"
 	"github.com/mcuadros/go-version"
+	"io/ioutil"
 	"npmify/fetch"
 	"npmify/fs"
 	"npmify/msg"
 	"npmify/state"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 var deps []state.Bower
+var npmDeps []state.NpmDependency
+var newPkgName string
 
 func BuildDeps(data []byte, outputPath string) {
 
@@ -26,7 +33,7 @@ func BuildDeps(data []byte, outputPath string) {
 	getKeys(jsonParsed, "devDependencies")
 
 	// Pull in all items under "resolutions"
-	getKeys(jsonParsed, "resolutions")
+	//getKeys(jsonParsed, "resolutions")
 
 	d := &state.Dependencies{
 		OutdatedCount: findOutdated(deps),
@@ -34,7 +41,7 @@ func BuildDeps(data []byte, outputPath string) {
 		Bower: deps,
 	}
 
-	fs.WriteFile(outputPath, d)
+	fs.WriteNpmifyFile(outputPath, d)
 }
 
 func getKeys(jsonData *gabs.Container, bowerKey string) {
@@ -101,4 +108,121 @@ func findOutdated(deps []state.Bower) int {
 
 func getTotalCount(deps []state.Bower) int {
 	return len(deps)
+}
+
+func CopyPackageJson(cfg state.Configuration, newFilePath string) {
+	originalPkgJson := cfg.PackageJsonPath
+	// Save the package name for later.
+	newPkgName = newFilePath
+	nfp := filepath.Dir(originalPkgJson) + "/" + newFilePath
+	err := fs.CopyFile(originalPkgJson, nfp)
+	msg.CheckErr(err)
+}
+
+func BuildPkgJson(data []byte, cfg state.Configuration) {
+	pkgJson, err := ioutil.ReadFile(cfg.PackageJsonPath)
+	msg.CheckErr(err)
+
+	npmParsed, err := gabs.ParseJSON(data)
+	msg.CheckErr(err)
+
+	for _, dep := range npmParsed.Path("bower").Children() {
+		var d = state.NpmDependency{}
+		d.PackageName = strings.Trim(dep.Path("name").String(), "\"")
+		d.PackageVersion = strings.Trim(dep.Path("version").String(), "\"")
+
+		npmDeps = append(npmDeps, d)
+	}
+
+	pkgData, err := gabs.ParseJSON(pkgJson)
+	msg.CheckErr(err)
+
+	// Build the package.json data into a struct
+	pkgStruct := state.PackageJson{}
+	pkgStruct.Name = strings.Trim(pkgData.S("name").String(), "\"")
+	pkgStruct.Version = strings.Trim(pkgData.S("version").String(), "\"")
+	pkgStruct.Dependencies = buildDependencyObject(npmDeps, pkgJson)
+	pkgStruct.DevDependencies = buildDevDependencyObject(npmDeps, pkgJson)
+	pkgStruct.Engines = buildPackageEngines(pkgJson)
+	pkgStruct.Scripts = buildPackageScripts(pkgJson)
+
+	fs.WritePackageJsonFile(filepath.Dir(cfg.PackageJsonPath) + "/" + "package.npmified.json", pkgStruct)
+}
+
+func buildDependencyObject(npmDependencies []state.NpmDependency, originalDependencies []byte) map[string]interface{} {
+	var npm = make(map[string]interface{})
+	var bower = make(map[string]interface{})
+
+	og, err := gabs.ParseJSON(originalDependencies)
+	msg.CheckErr(err)
+
+	for _, dep := range npmDependencies {
+		bower[dep.PackageName] = dep.PackageVersion
+	}
+
+	for name, ver := range og.S("dependencies").ChildrenMap() {
+		npm[name] = strings.Trim(ver.String(), "\"")
+	}
+
+	err = mergo.Merge(&bower, npm)
+	msg.CheckErr(err)
+
+	return bower
+}
+
+func buildDevDependencyObject(npmDependencies []state.NpmDependency, originalDependencies []byte) map[string]interface{} {
+	var npm = make(map[string]interface{})
+	//var bower = make(map[string]interface{})
+
+	og, err := gabs.ParseJSON(originalDependencies)
+	msg.CheckErr(err)
+
+	//for _, dep := range npmDependencies {
+	//	bower[dep.PackageName] = dep.PackageVersion
+	//}
+
+	for name, ver := range og.S("devDependencies").ChildrenMap() {
+		npm[name] = strings.Trim(ver.String(), "\"")
+	}
+
+	//err = mergo.Merge(&bower, npm)
+	//msg.CheckErr(err)
+
+	return npm
+}
+
+func buildPackageEngines(originalDependencies []byte) map[string]interface{} {
+	var engines = make(map[string]interface{})
+
+	og, err := gabs.ParseJSON(originalDependencies)
+	msg.CheckErr(err)
+
+	for key, val := range og.S("engines").ChildrenMap() {
+		// Sorry...
+		valString := strings.Replace(strings.Trim(val.String(), "\""), "u003e", ">", -1)
+		engines[key] = strings.Trim(valString, "\\")
+	}
+
+	return engines
+}
+
+func buildPackageScripts(originalDependencies []byte) map[string]interface{} {
+	var scripts = make(map[string]interface{})
+
+	og, err := gabs.ParseJSON(originalDependencies)
+	msg.CheckErr(err)
+
+	for name, ver := range og.S("scripts").ChildrenMap() {
+		scripts[name] = strings.Trim(ver.String(), "\"")
+	}
+
+	return scripts
+}
+
+func JSONMarshal(t interface{}) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	return buffer.Bytes(), err
 }

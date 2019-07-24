@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/structs"
@@ -14,34 +15,49 @@ import (
 	"sort"
 )
 
-func CopyFile(origPath string, newPath string) {
-	orig, err := os.Open(origPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer orig.Close()
+func CopyFile(src, dst string) error {
+	var err error
+	var srcfile *os.File
+	var dstfile *os.File
+	var srcinfo os.FileInfo
 
-	newPkg, err := os.OpenFile(newPath, os.O_RDWR|os.O_CREATE, 0666)
-	if err != nil {
-		log.Fatal(err)
+	if srcfile, err = os.Open(src); err != nil {
+		return err
 	}
-	defer newPkg.Close()
+	defer srcfile.Close()
 
-	_, err = io.Copy(orig, newPkg)
-	if err != nil {
-		log.Fatal(err)
+	if dstfile, err = os.Create(dst); err != nil {
+		return err
 	}
+	defer dstfile.Close()
+
+	if _, err = io.Copy(dstfile, srcfile); err != nil {
+		return err
+	}
+	if srcinfo, err = os.Stat(src); err != nil {
+		return err
+	}
+	return os.Chmod(dst, srcinfo.Mode())
 }
 
-func WriteFile(filePath string, deps *state.Dependencies) {
+func WriteNpmifyFile(filePath string, deps *state.Dependencies) {
 
 	sort.Slice(deps.Bower, func(i, j int) bool {
 		return deps.Bower[i].Name < deps.Bower[j].Name
 	})
 
+	// TODO Move this out to a config flag
 	DoExcel(*deps)
 
-	file, err := json.MarshalIndent(&deps, "", "  ")
+	file, err := JSONMarshalIndent(&deps, "", "  ")
+	msg.CheckErr(err)
+
+	err = ioutil.WriteFile(filePath, file, 0644)
+	msg.CheckErr(err)
+}
+
+func WritePackageJsonFile(filePath string, pkg state.PackageJson) {
+	file, err := JSONMarshalIndent(&pkg, "", "    ")
 	msg.CheckErr(err)
 
 	err = ioutil.WriteFile(filePath, file, 0644)
@@ -117,4 +133,25 @@ func FileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func JSONMarshal(t interface{}) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	err := encoder.Encode(t)
+	return buffer.Bytes(), err
+}
+
+func JSONMarshalIndent(t interface{}, prefix, indent string) ([]byte, error) {
+	b, err := JSONMarshal(t)
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	err = json.Indent(&buf, b, prefix, indent)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

@@ -18,7 +18,7 @@ import (
 )
 
 const defaultConfigFile = "config.json"
-
+var buildPkg *bool
 var usr, _ = user.Current()
 
 func main() {
@@ -27,19 +27,31 @@ func main() {
 
 	msg.FancyPrint("/**************************************\n * NPMify v%s\n **************************************/\n", cfg.Version)
 
+	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
+
 	bowerFile, err := ioutil.ReadFile(cfg.BowerFilePath)
 	msg.CheckErr(err)
 
-	outfile := cfg.OutputDir + "/" + cfg.OutputFileName
-
 	util.BuildDeps(bowerFile, outfile)
+
+	if *buildPkg {
+		if fs.FileExists(cfg.OutputDir + "/" + cfg.OutputFileName) {
+			npmified, err := ioutil.ReadFile(cfg.OutputDir + "/" + cfg.OutputFileName)
+			msg.CheckErr(err)
+
+			util.CopyPackageJson(cfg, "package.npmified.json")
+			util.BuildPkgJson(npmified, cfg)
+		} else {
+			msg.FancyPrint("Please generate an npmified.json file first! %s", "")
+		}
+	}
 
 	web.Init(outfile)
 }
 
 func SetupConfig() state.Configuration {
 	configuration := state.Configuration{}
-
+	buildPkg = flag.Bool("buildPkg", false, "Create a new package.json with data from your bower dependencies.")
 	cfgFile := flag.String("cfg", filepath.Join(usr.HomeDir, "npmify", defaultConfigFile), "Path to your config")
 	configuration = settings(*cfgFile)
 	flag.Parse()
