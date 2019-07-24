@@ -25,6 +25,7 @@ type Bower struct {
 	Name 		string `json:"name"`
 	Version 	string `json:"version"`
 	NpmVersion 	string `json:"npm_version"`
+	License		string	`json:"license"`
 	Type 		string `json:"type"`
 	Outdated   	bool   `json:"outdated"`
 	Group		string	`json:"group"`
