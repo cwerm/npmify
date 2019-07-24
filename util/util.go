@@ -26,7 +26,7 @@ func BuildDeps(data []byte, outputPath string) {
 	getKeys(jsonParsed, "devDependencies")
 
 	// Pull in all items under "resolutions"
-	getKeys(jsonParsed, "resolutions")
+	//getKeys(jsonParsed, "resolutions")
 
 	d := &state.Dependencies{
 		OutdatedCount: findOutdated(deps),
@@ -44,17 +44,18 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 	for key, child := range jsonData.S(bowerKey).ChildrenMap() {
 		var b = state.Bower{}
 
-		pkg := fetch.Get(`https://registry.npmjs.org/-/package/` + strings.ToLower(key) + `/dist-tags`)
+		pkg := fetch.Get(`https://api.npms.io/v2/package/` + strings.ToLower(key))
 		var re = regexp.MustCompile(`^(\~|\^)(.*)`)
 		pkgJson, _ := gabs.ParseJSON(pkg)
 
 		var bowerVersion = re.ReplaceAllString(child.Data().(string), "${2}")
-		var npmVersion = strings.Trim(pkgJson.S("latest").String(), "\"")
+		var npmVersion = strings.Trim(pkgJson.Path("collected.metadata.version").String(), "\"")
 		var outdated = version.Compare(bowerVersion, npmVersion, "<")
 
 		b.Name = key
 		b.Version = bowerVersion
 		b.NpmVersion = npmVersion
+		b.License = strings.Trim(pkgJson.Path("collected.metadata.license").String(), "\"")
 		b.Type = bowerKey
 		b.Outdated = outdated
 
