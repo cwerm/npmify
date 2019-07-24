@@ -26,7 +26,7 @@ func BuildDeps(data []byte, outputPath string) {
 	getKeys(jsonParsed, "devDependencies")
 
 	// Pull in all items under "resolutions"
-	getKeys(jsonParsed, "resolutions")
+	//getKeys(jsonParsed, "resolutions")
 
 	d := &state.Dependencies{
 		OutdatedCount: findOutdated(deps),
