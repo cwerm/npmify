@@ -151,29 +151,65 @@ let deps = [
 ];
 
 // Append the list of dependencies to the #app div.
+// const buildList = (dependencies) => {
+//     return $('#app').innerHTML = `
+//     ${dependencies.map(dep => {
+//         let isChecked = localStorage.getItem(dep.name) === 'true';
+//         // console.log(dep.name, isChecked)
+//         return `${dep.outdated ? `<div class="dependency outdated">` : `<div class="dependency">`}
+//             ${isChecked ? `<h2 class="title done">${dep.name}</h2>` : `<h2 class="title">${dep.name}</h2>`}
+//             <div class="grid">
+//                 <strong>Bower Version:</strong> <span>${dep.version}</span>
+//                 <strong>NPM Version:</strong> <span>${dep.npmVersion}</span>
+//                 <strong>Bower Type:</strong> <span>${dep.bowerType}</span>
+//                 <a class="btn" href="https://www.npmjs.com/package/${dep.name}" target="_blank">NPM Link</a>
+//                 <span class="grid-spacer"></span>
+//                 <label for="${dep.name}-done">Done?</label>
+//                 ${isChecked ? `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" checked />` :
+//             `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" />`
+//             }
+//
+//             </div>
+//         </div>`
+//     }).join('')}
+// `
+// }
+
 const buildList = (dependencies) => {
-    return $('#app').innerHTML = `
+    return $('#list').innerHTML = `
     ${dependencies.map(dep => {
         let isChecked = localStorage.getItem(dep.name) === 'true';
+        console.log(dep.version)
         // console.log(dep.name, isChecked)
-        return `${dep.outdated ? `<div class="dependency outdated">` : `<div class="dependency">`}
-            ${isChecked ? `<h2 class="title done">${dep.name}</h2>` : `<h2 class="title">${dep.name}</h2>`} 
-            <div class="grid">
-                <strong>Bower Version:</strong> <span>${dep.version}</span>
-                <strong>NPM Version:</strong> <span>${dep.npmVersion}</span>
-                <strong>Bower Type:</strong> <span>${dep.bowerType}</span>
-                <a class="btn" href="https://www.npmjs.com/package/${dep.name}" target="_blank">NPM Link</a>
-                <span class="grid-spacer"></span>
-                <label for="${dep.name}-done">Done?</label>
-                ${isChecked ? `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" checked />` :
-            `<input id="${dep.name}-done" class="isDone" type="checkbox" value="${dep.name}" />`
-            }
-                 
-            </div>
-        </div>`
+            return `<div class="cursor-pointer my-1 px-2 hover:bg-blue-300 rounded border-b">
+                <div class="flex">
+                    <div class="w-8 text-center pt-1">
+                      ${dep.outdated ? `<p class="text-3xl text-red-500">&bull;</p>` : `<p class="text-3xl p-0 text-green-500">&bull;</p>`} 
+                    </div>
+                    <div class="w-3/5 py-3 px-1">
+                      <p class="hover:text-blue-700 font-bold">${dep.name}</p>
+                    </div>
+                    <div class="w-2/5 text-right p-3">
+                      <p class="text-sm flex text-grey-500 font-light truncate align-center justify-end">
+                        <img class="w-8 mr-4" src="assets/bower-logo.svg" alt="bower logo" /> v${dep.version}
+                      </p>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-8"></div>
+                    <div class="w-3/5 py-3 px-1">
+<!--                      <p class="hover:text-blue-700">${dep.bowerType}</p>-->
+                    </div>
+                    <div class="w-2/5 text-right p-3">
+                      <p class="text-sm flex text-grey-500 font-light truncate align-center justify-end">
+                        <img class="w-8 mr-4" src="assets/npm-logo.svg" alt="npm logo" /> v${dep.npmVersion}
+                      </p>
+                    </div>
+                </div>
+              </div>`
     }).join('')}
 `
-}
+};
 
 customElements.define('px-marquee', PxMarquee);
 

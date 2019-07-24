@@ -16,12 +16,6 @@ h2 {
     font-size: 1.5rem;
 }
 
-.container {
-    list-style: none;
-    width: 33vw;
-    position: relative;
-    margin: 0 auto;
-}
 .dependency {
     padding: 1rem;
     border-bottom: 1px solid rgba(0,0,0,0.25);
