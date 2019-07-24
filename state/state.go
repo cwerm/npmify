@@ -1,18 +1,18 @@
 package state
 
 type Configuration struct {
-	OutputDir		string `json:"output_dir"`
-	OutputFileName 	string `json:"output_file_name"`
-	BowerFilePath	string `json:"bower_file_path"`
-	PackageJsonPath string `json:"package_json_path"`
-	Packages		[]Package `json:"packages"`
-	Version			string	`json:"version"`
+	OutputDir		string 		`json:"output_dir"`
+	OutputFileName 	string 		`json:"output_file_name"`
+	BowerFilePath	string 		`json:"bower_file_path"`
+	PackageJsonPath string 		`json:"package_json_path"`
+	Packages		[]Package 	`json:"packages"`
+	Version			string		`json:"version"`
 }
 
 type Package struct {
-	Name string `json:"name"`
-	NpmVersion string `json:"npm_version"`
-	NpmPackage string `json:"npm_package"`
+	Name string 		`json:"name"`
+	NpmVersion string 	`json:"npm_version"`
+	NpmPackage string 	`json:"npm_package"`
 }
 
 type Dependencies struct {

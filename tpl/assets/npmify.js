@@ -144,6 +144,7 @@ let deps = [
         name: "{{ .Name }}",
         version: "{{ .Version }}",
         npmVersion: "{{ .NpmVersion }}",
+        license: "{{ .License }}",
         outdated: {{ .Outdated }},
         bowerType: "{{ .Type }}",
     },
@@ -179,7 +180,7 @@ const buildList = (dependencies) => {
     return $('#list').innerHTML = `
     ${dependencies.map(dep => {
         let isChecked = localStorage.getItem(dep.name) === 'true';
-        console.log(dep.version)
+        console.log(typeof dep.license)
         // console.log(dep.name, isChecked)
             return `<div class="cursor-pointer my-1 px-2 hover:bg-blue-300 rounded border-b">
                 <div class="flex">
@@ -196,9 +197,16 @@ const buildList = (dependencies) => {
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="w-8"></div>
-                    <div class="w-3/5 py-3 px-1">
-<!--                      <p class="hover:text-blue-700">${dep.bowerType}</p>-->
+                    <div class="w-3/5 py-3 px-1"> 
+                        ${dep.license ? 
+                            `<span class="text-sm flex text-grey-500 font-light truncate align-center justify-start">
+                                <svg width="16" height="16" class="mr-4" viewBox="0 0 14 16" version="1.1" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M7 4c-.83 0-1.5-.67-1.5-1.5S6.17 1 7 1s1.5.67 1.5 1.5S7.83 4 7 4zm7 6c0 1.11-.89 2-2 2h-1c-1.11 0-2-.89-2-2l2-4h-1c-.55 0-1-.45-1-1H8v8c.42 0 1 .45 1 1h1c.42 0 1 .45 1 1H3c0-.55.58-1 1-1h1c0-.55.58-1 1-1h.03L6 5H5c0 .55-.45 1-1 1H3l2 4c0 1.11-.89 2-2 2H2c-1.11 0-2-.89-2-2l2-4H1V5h3c0-.55.45-1 1-1h4c.55 0 1 .45 1 1h3v1h-1l2 4zM2.5 7L1 10h3L2.5 7zM13 10l-1.5-3-1.5 3h3z"></path>
+                                </svg> 
+                                ${dep.license.includes('GPL') ? `<span class="text-red-600 font-bold"> ${dep.license}</span>` : `<span>${dep.license}</span>` }` : `<span class="text-red-600 font-bold">NO LICENSE</span>`
+                         }
+                        </p>
                     </div>
                     <div class="w-2/5 text-right p-3">
                       <p class="text-sm flex text-grey-500 font-light truncate align-center justify-end">

@@ -51,11 +51,19 @@ func getKeys(jsonData *gabs.Container, bowerKey string) {
 		var bowerVersion = re.ReplaceAllString(child.Data().(string), "${2}")
 		var npmVersion = strings.Trim(pkgJson.Path("collected.metadata.version").String(), "\"")
 		var outdated = version.Compare(bowerVersion, npmVersion, "<")
+		var license string
+
+		// TODO Refactor this trash.
+		if pkgJson.Path("collected.metadata.license").String() == "null" {
+			license = ""
+		} else {
+			license = strings.Trim(pkgJson.Path("collected.metadata.license").String(), "\"")
+		}
 
 		b.Name = key
 		b.Version = bowerVersion
 		b.NpmVersion = npmVersion
-		b.License = strings.Trim(pkgJson.Path("collected.metadata.license").String(), "\"")
+		b.License = license
 		b.Type = bowerKey
 		b.Outdated = outdated
 
